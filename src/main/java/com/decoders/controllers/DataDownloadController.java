@@ -58,14 +58,22 @@ public class DataDownloadController {
 	        	List<SummaryPageBean> summaryBeanList= new ArrayList<SummaryPageBean>();
 	            br = new BufferedReader(new FileReader("Destination.csv"));
 	            int i=1;
+	            String journeyIdentifier=null;
 	            while ((line = br.readLine()) != null) {
 	            	if(i==1)
 	            	{	 i++;
 	            		continue;
 	            	}
+	            	
 	                // use comma as separator
 	                String[] data = line.split(cvsSplitBy);
 	                SummaryPageBean bean= new SummaryPageBean();
+
+	            	if(null==journeyIdentifier)
+	            	{
+	            		journeyIdentifier=jid+"_"+data[0]+"_"+data[1];
+	            	}
+	            	bean.setJourneyIdentifier(journeyIdentifier);
 	                bean.setDate(data[0]);
 	                bean.setTime(data[1]);
 	                bean.setEventName(data[2]);
