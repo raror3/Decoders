@@ -1,9 +1,19 @@
-# Decoders
+# Decoders-Spring
 A Hackathon initiative by: Sumit, Raghav, Harshita, Hitesh
 
-#### ReadMe documents:
-Check individual readMe documents for projects under:
+#### Tech Stack:
 
- * Decoders-Spring
- * concourse-ci
- * node-app
+* Java 8
+* SpringBoot
+* Gradle for build
+* Mongo DB
+
+
+#### Steps to set-up this project on you local dev-box:
+
+* Install SpringSource (STS)
+* Install Mongo DB on your local machine
+* Take clone of this project.
+* Execute Gradle Refresh All to refresh all dependencies.
+* Run the project as Spring Boot Application.
+
