@@ -5,7 +5,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PageBean {
+public class DetailPageBean {
 
 	@SerializedName("Date")
 	@Expose
