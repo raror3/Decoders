@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.decoders.repository;
+package com.decoders;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
