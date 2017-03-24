@@ -1,5 +1,7 @@
-# Decoders-Spring
+# Decoders
 A Hackathon initiative by: Sumit, Raghav, Harshita, Hitesh
+
+<a href='https://travis-ci.org/raror3/Decoders'><img src='https://travis-ci.org/raror3/Decoders.svg?branch=master'></a>
 
 #### Tech Stack:
 
