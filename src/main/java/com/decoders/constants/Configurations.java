@@ -21,6 +21,36 @@ public class Configurations {
 	private String emptySpace = " ";
 
 	private String salt;
+	private String apiSalt;
+	private String apiUrl;
+
+	/**
+	 * @return the apiUrl
+	 */
+	public String getApiUrl() {
+		return apiUrl;
+	}
+
+	/**
+	 * @param apiUrl the apiUrl to set
+	 */
+	public void setApiUrl(String apiUrl) {
+		this.apiUrl = apiUrl;
+	}
+
+	/**
+	 * @return the apiSalt
+	 */
+	public String getApiSalt() {
+		return apiSalt;
+	}
+
+	/**
+	 * @param apiSalt the apiSalt to set
+	 */
+	public void setApiSalt(String apiSalt) {
+		this.apiSalt = apiSalt;
+	}
 
 	/**
 	 * @return the salt

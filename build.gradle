@@ -33,7 +33,8 @@ repositories {
 
 dependencies {
 	//compile("org.springframework.boot:spring-boot-starter-thymeleaf")
-    compile("org.springframework.boot:spring-boot-devtools")
+    //compile("org.springframework.boot:spring-boot-devtools")
+    compile "com.marksandspencer:mands-springboot-hystrix:1.0.0"
 	compile("org.springframework.boot:spring-boot-starter-mustache")
 	testCompile("org.springframework.boot:spring-boot-starter-test")
 	compile group: 'pl.allegro.tech.boot', name: 'handlebars-spring-boot-starter', version: '0.2.15'
@@ -43,4 +44,6 @@ dependencies {
 	compile("org.springframework.boot:spring-boot-starter-data-rest")
 	compile("org.springframework.boot:spring-boot-starter-data-mongodb")
     compile("org.springframework.boot:spring-boot-starter-web")
+    compile group: 'javax.ws.rs', name: 'jsr311-api', version: '1.1.1'
+
 }
