@@ -41,7 +41,26 @@ public class SummaryPageBean {
 	@SerializedName("Speed Index")
 	@Expose
 	private Long speedIndex;
-
+	@SerializedName("Base Page Result")
+	@Expose
+	private String basePageResult;
+	public String getBasePageResult() {
+		return basePageResult;
+	}
+	public void setBasePageResult(String basePageResult) {
+		this.basePageResult = basePageResult;
+	}
+	public String getPageTitle() {
+		return pageTitle;
+	}
+	public void setPageTitle(String pageTitle) {
+		this.pageTitle = pageTitle;
+	}
+	@SerializedName("Page Title")
+	@Expose
+	private String pageTitle;
+	
+	
 	/**
 	 * @return the journeyIdentifier
 	 */
