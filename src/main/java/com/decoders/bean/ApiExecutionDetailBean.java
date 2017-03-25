@@ -15,6 +15,20 @@ public class ApiExecutionDetailBean {
 	private int apiExecutionStartHourOfDay;
 	private int apiExecutionStartMinuteOfHour;
 	private int apiExecutionEndMinuteOfHour;
+	private String overallStatus;
+
+	/**
+	 * @return the overallStatus
+	 */
+	public String getOverallStatus() {
+		return overallStatus;
+	}
+	/**
+	 * @param overallStatus the overallStatus to set
+	 */
+	public void setOverallStatus(String overallStatus) {
+		this.overallStatus = overallStatus;
+	}
 	/**
 	 * @return the apiExecutionEndMinuteOfHour
 	 */
