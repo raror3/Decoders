@@ -3,6 +3,8 @@
  */
 package com.decoders.controllers;
 
+//import javax.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +31,11 @@ public class UserController {
 
 	@Autowired
 	UserProfileRepository userProfileRepository;
-	
+
 	@Autowired
 	Configurations configObj;
 	
-	@RequestMapping(path="/login", method = { RequestMethod.POST })
+	@RequestMapping(path="/login", method = { RequestMethod.POST }, consumes = { MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE })
     public String loginUser(@RequestBody UserLoginRequestBean userLoginRequestJson, Model model) {
 		UserLoginResponseBean loginResponseBean = validateUser(userLoginRequestJson);
         return new Gson().toJson(loginResponseBean);
