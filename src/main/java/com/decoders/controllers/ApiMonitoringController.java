@@ -9,18 +9,23 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -42,10 +47,10 @@ public class ApiMonitoringController {
 
 	@Autowired
 	UserProfileRepository userProfileRepository;
-	
+
 	@Autowired
 	ApiExecutionDetailRepository apiExecutionDetailRepository;
-	
+
 	@Autowired
 	Configurations configObj;
 
@@ -78,6 +83,7 @@ public class ApiMonitoringController {
 			    ApiDetailBean apiDetailBean = gson.fromJson(resultJsonStr, ApiDetailBean.class);
 			    ApiExecutionDetailBean apiExecutionDetailBean = new ApiExecutionDetailBean();
 			    apiExecutionDetailBean.setResponseCode(Integer.valueOf(apiDetailBean.getResponseHeader().getStatus()));
+			    apiExecutionDetailBean.setOverallStatus("Success");
 			    apiExecutionDetailBean.setTimeTaken(timeTaken);
 			    Calendar rightNow = Calendar.getInstance();
 			    DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -91,6 +97,7 @@ public class ApiMonitoringController {
 			    	endHourOfDay = rightNow.get(Calendar.HOUR_OF_DAY) + 1;
 			    }
 			    apiExecutionDetailBean.setApiExecutionEndHourOfDay(endHourOfDay);
+			    apiExecutionDetailBean.setApiExecutionEndMinuteOfHour(endMinuteOfHour);
 			    apiExecutionDetailBean.setExecutionDate(new SimpleDateFormat("dd/MM/yyyy").parse(dateFormat.format(new Date())));
 			    apiExecutionDetailBean.setExecutionTimeinMillis(Calendar.getInstance().getTimeInMillis());
 			    apiExecutionDetailBean.setApiName("DoveStoreFinderApi");
@@ -98,6 +105,7 @@ public class ApiMonitoringController {
 			} catch (Exception exception) {
 				ApiExecutionDetailBean apiExecutionDetailBean = new ApiExecutionDetailBean();
 			    apiExecutionDetailBean.setResponseCode(500);
+			    apiExecutionDetailBean.setOverallStatus("Failure");
 			    apiExecutionDetailBean.setTimeTaken(0);
 			    Calendar rightNow = Calendar.getInstance();
 			    DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -110,6 +118,7 @@ public class ApiMonitoringController {
 			    	endMinuteOfHour = 0;
 			    	endHourOfDay = rightNow.get(Calendar.HOUR_OF_DAY) + 1;
 			    }
+			    apiExecutionDetailBean.setApiExecutionEndMinuteOfHour(endMinuteOfHour);
 			    apiExecutionDetailBean.setApiExecutionEndHourOfDay(endHourOfDay);
 			    try {
 					apiExecutionDetailBean.setExecutionDate(new SimpleDateFormat("dd/MM/yyyy").parse(dateFormat.format(new Date())));
@@ -131,6 +140,7 @@ public class ApiMonitoringController {
 			ApiExecutionDetailBean apiExecutionDetailBean = new ApiExecutionDetailBean();
 	    try {
 			apiExecutionDetailBean.setResponseCode(500);
+			apiExecutionDetailBean.setOverallStatus("Failure");
 		    apiExecutionDetailBean.setTimeTaken(0);
 		    Calendar rightNow = Calendar.getInstance();
 		    DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -144,7 +154,7 @@ public class ApiMonitoringController {
 		    	endHourOfDay = rightNow.get(Calendar.HOUR_OF_DAY) + 1;
 		    }
 		    apiExecutionDetailBean.setApiExecutionEndHourOfDay(endHourOfDay);
-
+		    apiExecutionDetailBean.setApiExecutionEndMinuteOfHour(endMinuteOfHour);
 			apiExecutionDetailBean.setExecutionDate(new SimpleDateFormat("dd/MM/yyyy").parse(dateFormat.format(new Date())));
 		    apiExecutionDetailBean.setExecutionTimeinMillis(Calendar.getInstance().getTimeInMillis());
 		    apiExecutionDetailBean.setApiName("DoveStoreFinderApi");
@@ -156,4 +166,73 @@ public class ApiMonitoringController {
 		return "failed";
 	}
 	
+	@RequestMapping(path="/health/api/{apiName}", method = { RequestMethod.GET })
+    public String publishApiHealth(@PathVariable String apiName, 
+    		@RequestParam(value = "requestedDateStr", required = false) String requestedDateStr, Model model) {
+		Gson gson = new Gson();
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		Date requestedDate = new Date();
+		String overallStatus = "Success";
+		List<ApiExecutionDetailBean> apiExecutionDetailBeanList = null;
+		try {
+			requestedDate = new SimpleDateFormat("dd/MM/yyyy").parse(requestedDateStr);
+			Sort sort = new Sort(Direction.ASC,"executionDate");
+			apiExecutionDetailBeanList = apiExecutionDetailRepository.findByApiNameAndExecutionDate(apiName, requestedDate, sort);
+			if (null != apiExecutionDetailBeanList) {
+				for (ApiExecutionDetailBean detailBean : apiExecutionDetailBeanList) {
+					if (detailBean.getResponseCode() >= 400) {
+						overallStatus = "Failure";
+					}
+				}
+				for (ApiExecutionDetailBean detailBean : apiExecutionDetailBeanList) {
+					detailBean.setOverallStatus(overallStatus);
+				}
+			}
+			
+		} catch (ParseException e) {
+			log.info(e.getMessage(), e);
+		}
+		if (null != apiExecutionDetailBeanList) {
+			model.addAttribute(apiExecutionDetailBeanList);
+		} else {
+			model.addAttribute("Failed to get data due to connectivity or internal issue");
+		}
+		return "apiHealthDashboard";
+	}
+	
+	@RequestMapping(path="/api/health/{apiName}", method = { RequestMethod.GET })
+    public String validateAndPublishApiHealth(@PathVariable String apiName, 
+    		@RequestParam(value = "requestedDateStr", required = false) String requestedDateStr, Model model) {
+		Gson gson = new Gson();
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		Date requestedDate = new Date();
+		String overallStatus = "Success";
+		List<ApiExecutionDetailBean> apiExecutionDetailBeanList = null;
+		try {
+			if (null == requestedDateStr) {
+				requestedDate = new SimpleDateFormat("dd/MM/yyyy").parse(dateFormat.format(new Date()));
+			} else {
+				requestedDate = new SimpleDateFormat("dd/MM/yyyy").parse(requestedDateStr);
+			}
+			Sort sort = new Sort(Direction.ASC,"executionDate");
+			apiExecutionDetailBeanList = apiExecutionDetailRepository.findByApiNameAndExecutionDate(apiName, requestedDate, sort);
+			if (null != apiExecutionDetailBeanList) {
+				for (ApiExecutionDetailBean detailBean : apiExecutionDetailBeanList) {
+					if (detailBean.getResponseCode() >= 400) {
+						overallStatus = "Failure";
+					}
+				}
+				for (ApiExecutionDetailBean detailBean : apiExecutionDetailBeanList) {
+					detailBean.setOverallStatus(overallStatus);
+				}
+			}
+			
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			log.info(e.getMessage(), e);
+		}
+		
+		return gson.toJson(apiExecutionDetailBeanList);
+	}
+
 }
