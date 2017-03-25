@@ -84,11 +84,11 @@ public class DataDownloadController {
 					journeyIdentifier = jid + dateTime;
 					overallDate=data[0];
 				}
-				bean.setJourneyIdentifier(journeyIdentifier);
-				bean.setDate(data[0]);
-				bean.setTime(data[1]);
-				bean.setEventName(data[2]);
-				bean.setuRL(data[3]);
+				bean.setJourneyIdentifier(journeyIdentifier.replaceAll("\"", ""));
+				bean.setDate(data[0].replaceAll("\"", ""));
+				bean.setTime(data[1].replaceAll("\"", ""));
+				bean.setEventName(data[2].replaceAll("\"", ""));
+				bean.setuRL(data[3].replaceAll("\"", ""));
 				bean.setLoadTimeMs(Long.parseLong(data[4].replaceAll("\"", "")));
 				bean.setBasePageResult(data[63]);
 				int statusCode=Integer.parseInt(data[63].replaceAll("\"", ""));
@@ -100,29 +100,29 @@ public class DataDownloadController {
 				{
 					overAllResult="Error";
 				}
-				bean.setPageTitle(data[75]);
+				bean.setPageTitle(data[75].replaceAll("\"", ""));
 				System.out.println("list" + bean);
 				summaryBeanList.add(bean);
 				i++;
 			}
 			System.out.println("full json" + summaryBeanList);
-			summaryPageList.setJourneyHour(dateHour);
+			summaryPageList.setJourneyHour(dateHour.replaceAll("\"", ""));
 			
 			summaryPageList.setJourneyMinute(dateMinute+"");
 			
 			if(dateMinute==55)
 			{
-				summaryPageList.setJourneyEndHour(dateHour+1);
+				summaryPageList.setJourneyEndHour((dateHour+1).replaceAll("\"", ""));
 				summaryPageList.setJourneyMinute("00");
 			}
 			else
 			{	summaryPageList.setJourneyEndMinute(dateMinute+5+"");
-			    summaryPageList.setJourneyEndHour(dateHour);
+			    summaryPageList.setJourneyEndHour(dateHour.replaceAll("\"", ""));
 			}
-			summaryPageList.setResults(overAllResult);
+			summaryPageList.setResults(overAllResult.replaceAll("\"", ""));
 			summaryPageList.setJourneyMinute(dateMinute+"");
 			summaryPageList.setJourneyId(jid);
-			summaryPageList.setJourneyDate(overallDate);
+			summaryPageList.setJourneyDate(overallDate.replaceAll("\"", ""));
 			summaryPageList.setJourneyBeanList(summaryBeanList);
 			summaryPageRepository.save(summaryPageList);
 
